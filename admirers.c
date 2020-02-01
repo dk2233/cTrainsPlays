@@ -4,6 +4,7 @@
 
 #define SIZE_OF_NUMBER uint32_t
 #define MIN_PLAYER_NUMBER 1
+#define MAX_NUMBER (uint32_t)1e+9
 
 SIZE_OF_NUMBER HowManyAdmirers(SIZE_OF_NUMBER idPlayer,SIZE_OF_NUMBER playerNumber);
 
@@ -13,14 +14,14 @@ SIZE_OF_NUMBER HowManyAdmirers(SIZE_OF_NUMBER idPlayer, SIZE_OF_NUMBER playerNum
     //    printf("******* id: %d \n",idPlayer);
     for(SIZE_OF_NUMBER i=MIN_PLAYER_NUMBER;i <= playerNumber; i++)
     {
-        if (i==idPlayer) continue;
-        //printf("%d \n",i);
+        if (i==idPlayer) break;
+        //printf("%d \n",idPlayer);
 
         if ((idPlayer % i)==0) 
         {
 
             admirersNumber++;
-            //        printf("%d is admirer of %d \n",i,idPlayer);
+            //printf("%d is admirer of %d \n",i,idPlayer);
         }
     }
     return admirersNumber;
@@ -32,10 +33,16 @@ int main()
     SIZE_OF_NUMBER *table;
 
     scanf("%hhu",&N);
+    if (N>100) N=100;
+    if (N<1) N=1;
     table = calloc(N,sizeof(SIZE_OF_NUMBER));
     for(uint8_t iter=0; iter<N; iter++)
     {
         scanf("%u",&table[iter]);
+        if (table[iter]>MAX_NUMBER)
+            table[iter]=MAX_NUMBER;
+        else if (table[iter]<2)
+            table[iter]=2;
     }
     for(uint8_t iter=0; iter<N; iter++)
     {
