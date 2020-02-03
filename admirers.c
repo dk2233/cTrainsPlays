@@ -24,6 +24,8 @@ SIZE_OF_NUMBER HowManyAdmirers(SIZE_OF_NUMBER idPlayer, SIZE_OF_NUMBER playerNum
             //printf("%d is admirer of %d \n",i,idPlayer);
         }
     }
+    if ((admirersNumber % 2)!=0)
+        printf("%d -> odd number of admirers %d \n",idPlayer,admirersNumber);
     return admirersNumber;
 }
 
