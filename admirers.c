@@ -10,9 +10,9 @@ SIZE_OF_NUMBER HowManyAdmirers(SIZE_OF_NUMBER idPlayer,SIZE_OF_NUMBER playerNumb
 
 SIZE_OF_NUMBER HowManyAdmirers(SIZE_OF_NUMBER idPlayer, SIZE_OF_NUMBER playerNumber)
 {
-    SIZE_OF_NUMBER admirersNumber=0;
+    SIZE_OF_NUMBER admirersNumber=1;
     //    printf("******* id: %d \n",idPlayer);
-    for(SIZE_OF_NUMBER i=MIN_PLAYER_NUMBER;i <= playerNumber; i++)
+    for(SIZE_OF_NUMBER i=(MIN_PLAYER_NUMBER+1);i <= playerNumber; i++)
     {
         if (i==idPlayer) break;
         //printf("%d \n",idPlayer);
@@ -51,6 +51,7 @@ int main()
         SIZE_OF_NUMBER oddNumber=0;
         for(SIZE_OF_NUMBER nr=MIN_PLAYER_NUMBER; nr<=table[iter]; nr++)
         {
+            if (nr==1) continue;
             if ((HowManyAdmirers(nr,table[iter]) % 2) !=0) oddNumber++; 
         }
         printf("%d\n",oddNumber);
