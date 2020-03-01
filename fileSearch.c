@@ -14,6 +14,7 @@ int main(int argc, char** argv)
     }
 
     FILE *fileStruct;
+    char *strTmp;
 
     fileStruct = fopen(argv[1],"r");
 
@@ -30,10 +31,22 @@ int main(int argc, char** argv)
         str1 = fgets(str1, NUMBER_OF_CHAR, fileStruct);
         if (str1==NULL)
             break;
-        if ( strchr(str1,EOF) )
+        /*
+         *found specific char 
+         */
+        strTmp=strchr(str1,'a');
+        if (strTmp!=NULL)
         {
-            printf("%s\n",str1);
-            break;
+            printf("\'a\' in = \"%s\"\n",strTmp);
+        }
+        /*
+         * found specific word
+         */
+
+        strTmp=strstr(str1,"Plugin");
+        if (strTmp !=NULL)
+        {
+            printf("found %s\n in %s",strTmp,str1);
         }
 
 
