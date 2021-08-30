@@ -1,10 +1,10 @@
 /* 
-Students of Dcoder school love Mathematics. They love to read a variety of Mathematics books.
-To make sure they remain happy,their Mathematics teacher decided to get more books for them. 
-A student would become happy if there are at least X Mathematics books in the class and 
-not more than Y books because they know "All work and no play makes Jack a dull boy".
-The teacher wants to buy a minimum number of books to make the maximum number of students happy.
-*/
+   Students of Dcoder school love Mathematics. They love to read a variety of Mathematics books.
+   To make sure they remain happy,their Mathematics teacher decided to get more books for them. 
+   A student would become happy if there are at least X Mathematics books in the class and 
+   not more than Y books because they know "All work and no play makes Jack a dull boy".
+   The teacher wants to buy a minimum number of books to make the maximum number of students happy.
+   */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -12,7 +12,7 @@ The teacher wants to buy a minimum number of books to make the maximum number of
 
 #define MAX_BOOKS      1.0e+9
 
-//#define COMPILE_FOR_DCODER 1
+#define COMPILE_FOR_DCODER 1
 
 struct onePupilBooks
 {
@@ -25,6 +25,14 @@ enum typesOf_show
     SHOW_MIN,
     SHOW_MAX,
 } ;
+
+
+void SimplestAlgorithm(struct onePupilBooks * arrayWithPupilBooks, uint32_t N );
+
+void BetterAlgorithm(struct onePupilBooks * sortedMin, \
+        struct onePupilBooks * sortedMax,\
+        uint32_t N );
+
 void showAllNumbersinLines(struct onePupilBooks * tab, uint32_t N , enum typesOf_show kindOf);
 
 int compareToRaise(const void *a, const void *b);
@@ -88,6 +96,95 @@ void showAllNumbersinLines(struct onePupilBooks * tab, uint32_t N , enum typesOf
     puts("\n");
 #endif
 }
+
+void SimplestAlgorithm(struct onePupilBooks * arrayWithPupilBooks, uint32_t N )
+{
+    uint32_t maxBooksNumber=1U;
+    uint32_t maxNumberOfHappy=0U;
+    uint32_t minNumberOfBooks=0U;
+    uint32_t minStudentBooksValue=(uint32_t)MAX_BOOKS;
+    uint32_t numberOfHappy;
+
+    /*  here is the main heart of the procedure
+     *  assumption is it is enough to compare each students MIN with other students ranges */
+    for(unsigned int iter=0; iter < N; iter++)
+    {
+        numberOfHappy = howManyIsHappy(arrayWithPupilBooks,N,arrayWithPupilBooks[iter].MinBooks);
+#ifndef COMPILE_FOR_DCODER
+        printf("for students nr %d its min books to be happy %d -> we have number of happy students %d \n",iter, arrayWithPupilBooks[iter].MinBooks,numberOfHappy);
+#endif
+    }
+    /*     showAllPairs(tabCpyRiseMin,N);
+     *     showAllPairs(tabCpyRiseMax,N);
+     */
+    minStudentBooksValue =  MAX_BOOKS;
+    /*  fill min i max with starting values */
+    for(unsigned int iter=0; iter < N; iter++)
+    {
+        if (maxBooksNumber < arrayWithPupilBooks[iter].MaxBooks)
+            maxBooksNumber = arrayWithPupilBooks[iter].MaxBooks;
+
+        if (minStudentBooksValue>arrayWithPupilBooks[iter].MinBooks)
+            minStudentBooksValue = arrayWithPupilBooks[iter].MinBooks;
+    }
+
+#ifndef COMPILE_FOR_DCODER
+    printf("min:%d max:%d\n",minStudentBooksValue, maxBooksNumber);
+#endif
+    minNumberOfBooks = minStudentBooksValue;
+    maxNumberOfHappy = howManyIsHappy(arrayWithPupilBooks,N,minNumberOfBooks);
+
+    uint32_t actualNr; 
+    for(unsigned int bookCheck = minStudentBooksValue; bookCheck < maxBooksNumber; bookCheck++)
+    {
+        actualNr = howManyIsHappy(arrayWithPupilBooks, N, bookCheck);
+
+        if (maxNumberOfHappy < actualNr)
+        {
+            maxNumberOfHappy = actualNr;
+            minNumberOfBooks = bookCheck ;
+        } 
+    }
+    printf("%d %d\n",minNumberOfBooks, maxNumberOfHappy);
+
+}
+
+void BetterAlgorithm(struct onePupilBooks * sortedMin, \
+        struct onePupilBooks * sortedMax,\
+        uint32_t N )
+{
+    uint32_t maxNumberOfHappy=0U;
+    uint32_t minNumberOfBooks=0U;
+    uint32_t numberOfHappy;
+
+    minNumberOfBooks = sortedMin[0].MinBooks;
+    maxNumberOfHappy = 0U;
+    numberOfHappy = 0U;
+    int j;
+
+
+    for(int i = 0U, j = 0U; (i < N) && (j < N); )
+    {
+        if (sortedMin[i].MinBooks <= sortedMax[j].MaxBooks)
+        {
+            numberOfHappy += 1U;
+            i+=1U;
+        }
+        else if (sortedMin[i].MinBooks > sortedMax[j].MaxBooks)
+        {
+            numberOfHappy -= 1U;
+            j+=1U;
+        }
+
+        if (maxNumberOfHappy < numberOfHappy)
+        {
+            maxNumberOfHappy = numberOfHappy;
+            minNumberOfBooks = sortedMin[i-1].MinBooks;
+        }
+    }
+    printf("%d %d\n",minNumberOfBooks, maxNumberOfHappy);
+
+}
 int main(int argc, char** argv)
 {
     unsigned int N;
@@ -97,7 +194,7 @@ int main(int argc, char** argv)
     uint32_t minNumberOfBooks=0U;
     uint32_t numberOfHappy;
     struct onePupilBooks *onePupilBooks_tab;  
-/*  how many students N */
+    /*  how many students N */
     scanf("%u",&N);
     if (N>10000) N=10000;
     onePupilBooks_tab = calloc(N, sizeof(struct onePupilBooks));
@@ -120,51 +217,16 @@ int main(int argc, char** argv)
     showAllPairs(tabCpyRiseMin,N);
     showAllPairs(tabCpyRiseMax,N);
 
+
     qsort((void*)&(tabCpyRiseMin[0].MinBooks), N, sizeof(struct onePupilBooks), &compareToRaise);
     qsort((void*)tabCpyRiseMax, N, sizeof(struct onePupilBooks), &compareToRaiseMax);
-    /*  here is the main heart of the procedure
-     *  assumption is it is enough to compare each students MIN with other students ranges */
-    for(unsigned int iter=0; iter < N; iter++)
-    {
-        numberOfHappy = howManyIsHappy(onePupilBooks_tab,N,onePupilBooks_tab[iter].MinBooks);
-#ifndef COMPILE_FOR_DCODER
-        printf("for students nr %d its min books to be happy %d -> we have number of happy students %d \n",iter, onePupilBooks_tab[iter].MinBooks,numberOfHappy);
-#endif
-    }
-/*     showAllPairs(tabCpyRiseMin,N);
- *     showAllPairs(tabCpyRiseMax,N);
- */
+
     showAllNumbersinLines(tabCpyRiseMin, N, SHOW_MIN); 
     showAllNumbersinLines(tabCpyRiseMax, N, SHOW_MAX); 
-    minStudentBooksValue =  MAX_BOOKS;
-    /*  check if we do not exceeds max range for definition of books */
-    for(unsigned int iter=0; iter < N; iter++)
-    {
-        if (maxBooksNumber < onePupilBooks_tab[iter].MaxBooks)
-            maxBooksNumber = onePupilBooks_tab[iter].MaxBooks;
 
-        if (minStudentBooksValue>onePupilBooks_tab[iter].MinBooks)
-            minStudentBooksValue = onePupilBooks_tab[iter].MinBooks;
-    }
-  
-#ifndef COMPILE_FOR_DCODER
-    printf("min:%d max:%d\n",minStudentBooksValue, maxBooksNumber);
-#endif
-    minNumberOfBooks = minStudentBooksValue;
-    maxNumberOfHappy = howManyIsHappy(onePupilBooks_tab,N,minNumberOfBooks);
-    uint32_t actualNr; 
-    for(unsigned int bookCheck = minStudentBooksValue; bookCheck < maxBooksNumber; bookCheck++)
-    {
-        actualNr = howManyIsHappy(onePupilBooks_tab, N, bookCheck);
 
-        if (maxNumberOfHappy < actualNr)
-        {
-            maxNumberOfHappy = actualNr;
-            minNumberOfBooks = bookCheck ;
-        } 
-    }
-    printf("%d %d\n",minNumberOfBooks, maxNumberOfHappy);
-
+    //    SimplestAlgorithm(onePupilBooks_tab, N);
+    BetterAlgorithm(tabCpyRiseMin, tabCpyRiseMax, N);
     free(onePupilBooks_tab);
     free(tabCpyRiseMin);
     free(tabCpyRiseMax);
